@@ -1,0 +1,28 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["."],
+        "alias": {
+          "styles": "./styles"
+        },
+        "cwd": "babelrc"
+      }
+    ],
+    [
+      "wrap-in-js",
+      {
+        "extensions": ["css$", "scss$"]
+      }
+    ]
+  ],
+  "ignore": [],
+  "env": {
+    "test": {
+      "presets": [["env", { "modules": "commonjs" } ], "next/babel"]
+    },
+    "dev": { "presets": ["next/babel"] },
+    "production": { "presets": ["next/babel"] }    
+  }
+}
