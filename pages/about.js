@@ -1,14 +1,18 @@
+import React, { Component } from 'react'
 import AppProvider from '../lib/redux/AppProvider'
-import Head from '../components/Head'
+import withData from '../lib/apollo/withData'
+import About from '../components/_about'
 
-const About = () => (
-  <AppProvider>
-    <Head title='About' />
-    <section>
-      <div className='page-title'>About</div>
-    </section>
-    <style jsx>{``}</style>
-  </AppProvider>
-)
+class AboutPage extends Component {
+  render () {
+    return (
+      <AppProvider url={this.props.url} title='Home'>
+        <About {...this.props} />
+        <style jsx>{`
+        `}</style>
+      </AppProvider>
+    )
+  }
+}
 
-export default About
+export default withData(AboutPage)
