@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { withFauxDOM } from 'react-faux-dom'
-import { flatConcepts } from '../../data/artConcepts'
 import { binder } from '../../lib/_utils'
 import { event as currentEvent } from 'd3-selection'
+import { log } from 'util';
 const d3 = {
   ...require('d3'),
   ...require('d3-force'),
@@ -13,11 +13,10 @@ const d3 = {
 class CloudNav extends Component {
   constructor (props) {
     super(props)
-    this.state = { mindmap: 'loading', drag: 'finished', activeItems: flatConcepts }
-    binder(['callRender', 'renderD3'])
+    this.state = { mindmap: 'loading', drag: 'finished' /* activeItems: this.props.concepts, links: this.props.links */ }
+    binder(this, ['callRender', 'renderD3', 'renderInactiveItemList'])
   }
   componentDidMount () {
-    console.log(flatConcepts)
     this.callRender()
     this.props.animateFauxDOM(800)
   }
@@ -33,12 +32,36 @@ class CloudNav extends Component {
     // if (this.props.mindmap !== prevProps.mindmap) {
     //   this.callRender()
     // }
-    if (this.state.drag !== prevState.drag) {
-      console.log(this.state.drag)
+    if (
+      this.props.links !== prevProps.links
+    ) {
+      this.callRender()
+      this.props.animateFauxDOM(800)
     }
+    // if (this.props.concepts !== prevProps.concepts) {
+    //   this.setState({ activeItems: this.props.concepts })
+    // }
+    // if (this.props.links !== prevProps.links) {
+    //   this.setState({ activeItems: this.props.links })
+    // }
+  }
+
+  renderInactiveItemList () {
+    const { inactiveItems, onToggleActiveItem } = this.props
+    return inactiveItems.map(item => (
+      <li key={item} className='inactive-item' onClick={() => { onToggleActiveItem(item) }}>
+        { item }
+        <style jsx>{`
+          li {
+            cursor: pointer;
+          }
+        `}</style>
+      </li>
+    ))
   }
 
   callRender () {
+    console.log('calling render')
     if (!this.mindmap && !this.props.mindmap) {
       this.mindmap = this.props.connectFauxDOM('div', 'mindmap')
       setTimeout(() => { this.callRender() }, 200)
@@ -49,6 +72,7 @@ class CloudNav extends Component {
 
   async renderD3 (mindmap) {
     const that = this
+    d3.select('svg').remove()
     const svg = await d3.select(mindmap).append('svg')
     const w = typeof window !== 'undefined' ? window.innerWidth : 900
     const h = typeof window !== 'undefined' ? window.innerHeight : 500
@@ -62,29 +86,100 @@ class CloudNav extends Component {
     const labelAnchorLinks = []
     const links = []
 
-    this.state.activeItems.forEach((concept, i) => {
+    // console.log(this.props)
+
+    // this.props.conceptData.forEach((concept, i) => {
+    // const conceptNames = this.props.data.allArtConcepts.map(concept => concept.name) // THIS WORKS, maybe a problem in big normalizer reduce func?
+    // console.log(conceptNames, this.props.activeItems) //active items missing [representation, text, technology]
+    // const conceptNames = Object.keys(this.props.activeItems)
+    this.props.activeItems.forEach((concept, i) => {
+      // console.log(concept)
       let node = { label: concept }
       nodes.push(node)
       labelAnchors.push({ node: node })
       labelAnchors.push({ node: node })
     })
 
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = 0; j < i; j++) {
-        if (Math.random() > 0.95) {
-          links.push({
-            source: i,
-            target: j,
-            weight: Math.random()
-          })
-        }
-      }
+    const nodeLabels = nodes.map(node => node.label)
+
+    this.props.links.forEach((pair, i) => {
+      // console.log(pair);
+      // const seconds = this.props.links.map(p => p[1])
+      // console.log(seconds)
+      // seconds.forEach((item, j) => {
+      // console.log(i, j)
+      // const matchIndex = this.props.conceptData.indexOf(seconds[i])
+      // console.log(pair)
+      const matchIndex1 = nodeLabels.indexOf(pair[0])
+      const matchIndex2 = nodeLabels.indexOf(pair[1])
+      // const lastMatchIndex1 = nodeLabels.lastIndexOf(pair[0])
+      // const lastMatchIndex2 = nodeLabels.lastIndexOf(pair[1])
+      // const lastMatchIdx1 = nodeLabels.lastIndexOf(pair[0])
+      // const lastMatchIdx2 = nodeLabels.lastIndexOf(pair[1])
+      // console.log(seconds[i], this.props.conceptData, matchIndex1, matchIndex2);
+      // console.log(nodes, link, nodes.findIndex(node => node.label === link[0]))
+      // const i = nodes.findIndex(node => node.label === link[0])
+      // const j = nodes.findIndex(node => node.label === link[1])
+      // console.log(i, j)
+
+      // console.log(nodes, nodeLabels[matchIndex1], nodeLabels[matchIndex2])
+
+      // console.log(matchIndex1, matchIndex2)
+
+      links.push({
+        source: matchIndex1,
+        target: matchIndex2,
+        weight: Math.random()
+      })
       labelAnchorLinks.push({
-        source: i * 2,
-        target: i * 2 + 1,
-        weight: 1 })
-    }
-    console.log(labelAnchors);
+        // source: matchIndex1 * 2,
+        // target: matchIndex2 * 2 + 1,
+        source: matchIndex1 * 2,
+        target: matchIndex2 * 2 + 1,
+        // source: lastMatchIdx1,
+        // target: lastMatchIdx2,
+        weight: 1
+      })
+      // })
+    })
+
+    // console.log(nodeLabels, labelAnchors, labelAnchorLinks, links, nodes)
+    
+    // for (let i = 0; i < nodes.length; i++) {
+    //   for (let j = 0; j <= i; j++) {
+    //     links.push({
+    //       source: i,
+    //       target: j,
+    //       weight: Math.random()
+    //     })
+    //     labelAnchorLinks.push({
+    //       source: i * 2,
+    //       target: i * 2 + 1,
+    //       weight: 1
+    //     })
+    //   }
+    // }
+
+    // for (let i = 0; i < nodes.length; i++) {
+    //   for (let j = 0; j <= i; j++) {
+    //     // console.log(i, j)
+    //     // if (Math.random() > 0.95) {
+    //     //   links.push({
+    //     //     source: i,
+    //     //     target: j,
+    //     //     weight: Math.random()
+    //     //   })
+    //     // }
+    //   }
+      // labelAnchorLinks.push({
+      //   source: i * 2,
+      //   target: i * 2 + 1,
+      //   weight: 1 })
+    // }
+
+    // when working, the length of the above properties are 60, 30, 27, although it makes sense there would be so few links in that case.
+    // most likely the second number should be exactly half, the third is variable...
+    // see screenshot for what the data should look like
 
     const force = d3
       .forceSimulation(nodes)
@@ -92,13 +187,10 @@ class CloudNav extends Component {
       .force('link', d3.forceLink(links)
         .id(d => d.index)
         .distance(50)
-        // .distance(100)
-        .strength(x =>  x.weight * 2) 
-        // .strength(x =>  x.weight) 
+        .strength(x => x.weight * 2)
       )
       .force('charge', d3.forceManyBody()
-        .strength(-100)
-        // .strength(0)
+        .strength(-800)
       )
       .force('x', d3.forceX(0))
       .force('y', d3.forceY(0))
@@ -110,13 +202,11 @@ class CloudNav extends Component {
       .force('center', d3.forceCenter(w / 2, h / 2))
       .force('link', d3.forceLink(labelAnchorLinks)
         .id(d => d.index)
-        .distance(0)
-        // .strength(2)
+        .distance(50)
         .strength(2)
       )
       .force('charge', d3.forceManyBody()
-        .strength(-200)
-        // .strength(-1)
+        .strength(-300)
       )
       .force('x', d3.forceX(0))
       .force('y', d3.forceY(0))
@@ -177,7 +267,7 @@ class CloudNav extends Component {
         thisNodeText.style.setProperty('font-weight', thisNodeText.style.fontWeight === 'bold' ? 'normal' : 'bold')
         thisNodeText.style.setProperty('fill', thisNodeText.style.fill === '#555' ? '#dbdbdb' : '#555')
         // that.setActiveItems(thisNodeText.text)
-        that.props.onSetActiveItems(thisNodeText.text)
+        that.props.onToggleActiveItem(thisNodeText.text)
         that.props.animateFauxDOM(800)
         console.log(that.props)
       })
@@ -293,7 +383,17 @@ class CloudNav extends Component {
   render () {
     'rendering'
     return (
-      <div className='cloud-nav'>{ this.props.mindmap || null }</div> 
+      <div className='cloud-nav'>
+        <div className='inactive-items-wrapper'>
+          <ul>{ this.renderInactiveItemList() }</ul>
+        </div>
+        { this.props.mindmap || null }
+        <style jsx>{`
+          .inactive-items-wrapper {
+            position: absolute;
+          }
+        `}</style>
+      </div>
     )
   }
 }

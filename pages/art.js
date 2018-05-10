@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import AppProvider from '../lib/redux/AppProvider'
-import Art from '../components/_art'
+import Art from '../components/art'
 import withData from '../lib/apollo/withData'
 
 class ArtPage extends Component {

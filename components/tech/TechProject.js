@@ -9,7 +9,7 @@ export default class TechProject extends Component {
       <div className='tech-project'>
         <h1 className='title'>{ data.title }</h1>
         <Screen url={data.url} images={data.images} />
-        <IconSidebar icons={data.technologies} github={data.github} />
+        <IconSidebar icons={data.technologies} github={data.githubURL} />
         <div className='description'>
           <p>{ data.description }</p>
         </div>

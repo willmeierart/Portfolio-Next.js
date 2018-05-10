@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import { allTechProjects } from '../lib/apollo/queries'
 import { binder } from '../lib/_utils'
 import WithApolloLoader from '../components/hoc/WithApolloLoader'
 
@@ -19,7 +20,7 @@ export default function DataManager (ComposedComponent) {
     }
   }
   return compose(
-    graphql()
+    graphql(allTechProjects)
   )(
     connect(mapStateToProps, mapDispatchToProps)(
       WithApolloLoader(

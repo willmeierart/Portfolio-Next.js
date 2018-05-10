@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AppProvider from '../lib/redux/AppProvider'
 import withData from '../lib/apollo/withData'
-import Writing from '../components/_writing'
+import Writing from '../components/writing'
 
 class WritingPage extends Component {
   render () {

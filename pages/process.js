@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AppProvider from '../lib/redux/AppProvider'
 import withData from '../lib/apollo/withData'
-import Process from '../components/_process'
+import Process from '../components/process'
 
 class HomePage extends Component {
   render () {

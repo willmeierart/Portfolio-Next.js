@@ -3,8 +3,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { checkIfMobile, getVPDims } from '../lib/redux/actions'
-import Header from './core/Header'
-import Footer from './core/Footer'
+import Header from '../components/core/Header'
+import Footer from '../components/core/Footer'
 
 // import globalStyles from '../../styles/index.scss'
 
@@ -13,17 +13,15 @@ class App extends Component {
 
   }
   render () {
-    const { children } = this.props
+    const { children, url } = this.props
+    console.log(url)
+    
     return (
       <div className='app-outer'>
         <div className='app-inner'>
-          <header>
-            <Header />
-          </header>
+          { url.pathname !== '/' && <Header /> }
           <main>{ children }</main>
-          <footer>
-            <Footer />
-          </footer>
+          { url.pathname !== '/' && <Footer /> }
         </div>
         <style jsx global>{`
           a {
@@ -33,18 +31,57 @@ class App extends Component {
           li {
             list-style: none;
           }
-          html, body {
-            {/* overflow: hidden!important;
-            position: fixed!important; */}
-          }
           body {
             height: 100vh;
             width: 100vw;
             box-sizing: border-box;
+            font-family: Raleway;
+            font-weight: 100;
           }
-          header {}
-          footer {}
-          main {}
+          main {
+            height: 100%;
+            grid-column: 1/2;
+            margin: 0 auto;
+          }
+          h1 {
+            font-family: Raleway;
+            font-weight: 100;
+            text-transform: uppercase;
+          }
+          .responsive-wrapper {
+            display: flex;
+            justify-content: space-between;
+          }
+          .app-outer {
+            display: grid;
+            grid-template-columns: 1fr auto;
+          }
+          @media (min-width: 700px) {
+            .responsive-wrapper {
+              flex-direction: row;
+            }
+          }
+          @media (max-width: 699px) and (min-width: 486px) {
+            .responsive-wrapper {
+              flex-direction: column;
+            }
+          }
+          .reponsive-wrapper {
+            display: flex;
+            justify-content: space-between;
+          }
+          @keyframes fade {
+            0% { opacity: 1; }
+            50% { opacity: .25; }
+          }
+          @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes fade-in{
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+          }
         `}</style>
         {/* <style dangerouslySetInnerHTML={{ __html: globalStyles }} /> */}
       </div>
@@ -54,8 +91,8 @@ class App extends Component {
 
 function mapStateToProps (state) {
   return {
-    isMobile: state.splash.isMobile,
-    dims: state.splash.dims
+    isMobile: state.env.isMobile,
+    dims: state.env.dims
   }
 }
 

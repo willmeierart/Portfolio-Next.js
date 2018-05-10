@@ -6,7 +6,7 @@ export default class Tagline extends Component {
   constructor (props) {
     super(props)
     this.state = { currentTag: 'who' }
-    binder(['tagSwitcher', 'sendUpTag'])
+    binder(this, ['tagSwitcher', 'sendUpTag'])
   }
 
   componentWillMount () { this.tagSwitcher() }
@@ -50,6 +50,12 @@ export default class Tagline extends Component {
           transitionLeaveTimeout={1000}>
           <div key={this.state.currentTag}>{this.state.currentTag}</div>
         </ReactCSSTransitionReplace>
+        <style jsx>{`
+          .tagline {
+            grid-column: 5/6;
+            margin-bottom: -10px;
+          }
+        `}</style>
       </div>
     )
   }

@@ -8,8 +8,12 @@ class Tech extends Component {
   //   super(props)
 
   // }
+  componentDidMount () {
+    console.log(this.props)
+  }
   render () {
-    const projects = techprojects.map((project, i) => (
+    const data = this.props.data.allTechProjects
+    const projects = data.map((project, i) => (
       <div key={i}>
         <TechProject data={project} />
         <hr />

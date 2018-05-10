@@ -18,7 +18,7 @@ export default class Screen extends Component {
     const { images } = this.props
     let i = 0
     this.interval = setInterval(() => {
-      this.setState({ currentSRC: images[i] })
+      this.setState({ currentSRC: images[i].url })
       ++i
       if (i === images.length) { i = 0 }
     }, 4000)

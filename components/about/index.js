@@ -9,7 +9,7 @@ class About extends Component {
   // }
   render () {
     return (
-      <div />
+      <div>under construction....</div>
     )
   }
 }
